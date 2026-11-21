@@ -1,0 +1,42 @@
+name: 'TestingBot App Upload'
+description: 'Upload an Android or iOS app (.apk, .aab, .ipa, .zip) to TestingBot storage and output its tb:// app URL.'
+author: 'TestingBot'
+branding:
+    icon: 'upload-cloud'
+    color: 'blue'
+inputs:
+    key:
+        description: 'TestingBot API key. Falls back to TB_KEY / TESTINGBOT_KEY.'
+        required: false
+    secret:
+        description: 'TestingBot API secret. Falls back to TB_SECRET / TESTINGBOT_SECRET.'
+        required: false
+    file:
+        description: 'Path to the app file. Zip a .app bundle first. Either this or url.'
+        required: false
+    url:
+        description: 'Public URL TestingBot downloads the app from, instead of file.'
+        required: false
+    app-key:
+        description: 'Store the app under this name so its URL stays tb://<app-key> across uploads.'
+        required: false
+    wait-for-processing:
+        description: 'Wait until TestingBot has read the version and platform, so app-version is filled in.'
+        required: false
+        default: 'true'
+    processing-timeout:
+        description: 'Seconds to wait for processing.'
+        required: false
+        default: '300'
+outputs:
+    app-url:
+        description: 'The tb:// app URL, for the app (appium:app) capability. Also exported as TESTINGBOT_APP_URL and TB_APP_URL.'
+    app-id:
+        description: 'Numeric id of the stored app.'
+    app-version:
+        description: 'Version TestingBot read from the app.'
+    app-state:
+        description: 'Processing state: DONE or PROCESSING.'
+runs:
+    using: 'node24'
+    main: 'dist/index.js'

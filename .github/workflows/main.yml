@@ -1,0 +1,36 @@
+name: "PR Checks"
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    unit:
+        runs-on: ubuntu-latest
+        name: Unit Tests (Node ${{ matrix.node-version }})
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: [22, 24]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                node-version: ${{ matrix.node-version }}
+                cache: 'npm'
+            - run: npm ci
+            - run: npm run format-check
+            - run: npm run lint
+            - run: npm test
+            - name: Verify dist/ is up to date
+              # The actions run on node24 (see the action.yml files). Bundle on that.
+              if: matrix.node-version == 24
+              run: |
+                npm run build
+                git diff --exit-code -- '*/dist/' || (
+                  echo "::error::dist/ is out of date. Run 'npm run build' and commit the result." >&2
+                  exit 1
+                )

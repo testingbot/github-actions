@@ -1,0 +1,58 @@
+{
+  "name": "testingbot-github-actions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Actions for TestingBot: setup-env, report, app-upload, espresso and xcuitest",
+  "homepage": "https://github.com/testingbot/github-actions#readme",
+  "bugs": {
+    "url": "https://github.com/testingbot/github-actions/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/testingbot/github-actions.git"
+  },
+  "scripts": {
+    "format": "prettier --write '**/*.ts'",
+    "format-check": "prettier --check '**/*.ts'",
+    "lint": "eslint 'src/**/*.ts'",
+    "build": "for a in setup-env report app-upload espresso xcuitest; do ncc build src/$a/index.ts -o $a/dist --license licenses.txt || exit 1; done",
+    "pretest": "npm run build:test",
+    "test": "mocha --grep @live --invert",
+    "pretest:live": "npm run build:test",
+    "test:live": "mocha --grep @live --timeout 900000",
+    "build:test": "tsc -p tsconfig.test.json",
+    "all": "npm run build && npm run format && npm run lint && npm run test"
+  },
+  "author": "Jochen Delabie <jochen@testingbot.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "keywords": [
+    "testingbot",
+    "github-actions",
+    "espresso",
+    "xcuitest",
+    "app-automate",
+    "selenium"
+  ],
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.0.0",
+    "@types/sinon": "^21.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.2",
+    "@typescript-eslint/parser": "^8.58.2",
+    "@vercel/ncc": "^0.38.4",
+    "eslint": "^8.57.1",
+    "eslint-plugin-github": "^5.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "mocha": "^11.7.5",
+    "prettier": "^3.8.3",
+    "sinon": "^21.0.3",
+    "typescript": "^6.0.2"
+  }
+}

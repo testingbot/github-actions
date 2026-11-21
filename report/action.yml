@@ -1,0 +1,72 @@
+name: 'TestingBot Report'
+description: 'Write the results of a TestingBot build to the job summary, as JUnit, and optionally as a pull request comment.'
+author: 'TestingBot'
+branding:
+    icon: 'bar-chart-2'
+    color: 'blue'
+inputs:
+    key:
+        description: 'TestingBot API key. Falls back to TB_KEY / TESTINGBOT_KEY.'
+        required: false
+    secret:
+        description: 'TestingBot API secret. Falls back to TB_SECRET / TESTINGBOT_SECRET.'
+        required: false
+    build-name:
+        description: 'Build identifier to report on. Default: $TB_BUILD (set by setup-env), else the setup-env default for this run.'
+        required: false
+    wait-timeout:
+        description: 'Seconds to wait for the build to appear and for running tests to finish.'
+        required: false
+        default: '120'
+    poll-interval:
+        description: 'Seconds between polls while waiting.'
+        required: false
+        default: '10'
+    max-rows:
+        description: 'Maximum number of tests listed in the table (failed first).'
+        required: false
+        default: '100'
+    junit-file:
+        description: 'Also write the results as a JUnit XML file at this path.'
+        required: false
+    comment-on-pr:
+        description: 'On pull_request events, post (and keep updating) one comment with the results. Needs pull-requests: write.'
+        required: false
+        default: 'false'
+    comment-tag:
+        description: 'Distinguishes the comments of several report steps on one PR. Default: the workflow name.'
+        required: false
+    github-token:
+        description: 'Token for the PR comment.'
+        required: false
+        default: ${{ github.token }}
+    resolve-pr-check:
+        description: 'Tell TestingBot the build is finished so the PR check registered by setup-env (pr-check) resolves.'
+        required: false
+        default: 'false'
+    fail-on-failure:
+        description: 'Fail this step when a test failed or the build has no tests.'
+        required: false
+        default: 'false'
+outputs:
+    outcome:
+        description: 'passed, failed, running or no-tests.'
+    build-name:
+        description: 'The build identifier reported on.'
+    build-id:
+        description: 'Numeric TestingBot build id (when found among the 100 newest builds).'
+    build-url:
+        description: 'Link to the build in the TestingBot dashboard.'
+    total:
+        description: 'Number of tests in the build.'
+    passed:
+        description: 'Number of passed tests.'
+    failed:
+        description: 'Number of failed tests.'
+    unknown:
+        description: 'Number of tests without a result (or still running).'
+    junit-file:
+        description: 'Absolute path of the JUnit file, when junit-file was set.'
+runs:
+    using: 'node24'
+    main: 'dist/index.js'

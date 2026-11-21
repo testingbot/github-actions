@@ -1,0 +1,35 @@
+name: 'TestingBot Setup Env'
+description: 'Export TestingBot credentials, a build name and a tunnel identifier as environment variables for your tests.'
+author: 'TestingBot'
+branding:
+    icon: 'settings'
+    color: 'blue'
+inputs:
+    key:
+        description: 'TestingBot API key. Falls back to the TB_KEY / TESTINGBOT_KEY environment variable.'
+        required: false
+    secret:
+        description: 'TestingBot API secret. Falls back to TB_SECRET / TESTINGBOT_SECRET.'
+        required: false
+    build-name:
+        description: 'Build name (the `build` capability). Placeholders: {repo} {repository} {workflow} {job} {run_id} {run_number} {attempt} {ref} {pr} {branch} {sha}. Default: github-{repo}-{ref}-{run_id}-{attempt}.'
+        required: false
+    tunnel-identifier:
+        description: 'Tunnel identifier. Default: github-<run_id>-<attempt>-<job>-<random>, unique per job.'
+        required: false
+    export-credentials:
+        description: 'Export TB_KEY, TB_SECRET, TESTINGBOT_KEY and TESTINGBOT_SECRET for later steps.'
+        required: false
+        default: 'true'
+    pr-check:
+        description: 'On pull_request events, register the build with TestingBot so the TestingBot GitHub App posts a "TestingBot / tests" check. Pair with resolve-pr-check on the report action.'
+        required: false
+        default: 'false'
+outputs:
+    build-name:
+        description: 'The build name, also exported as TB_BUILD and TESTINGBOT_BUILD.'
+    tunnel-identifier:
+        description: 'The tunnel identifier, also exported as TB_TUNNEL_IDENTIFIER and TESTINGBOT_TUNNEL_IDENTIFIER.'
+runs:
+    using: 'node24'
+    main: 'dist/index.js'

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<testsuites>
+  <testsuite name="com.testingbot.calculator" tests="1" failures="1" skipped="0" timedout="0" errors="0">
+    <properties>
+      <property name="deviceName" value="Pixel 9"/>
+      <property name="version" value="16.0"/>
+      <property name="platform" value="ANDROID"/>
+    </properties>
+    <testcase name="ensureLargeNumbersWork" result="failed" classname="com.testingbot.calculator.AdvancedCalculatorTest.ensureLargeNumbersWork" test_id="t" time="5553">
+      <failure>androidx.test.espresso.base.DefaultFailureHandler$AssertionFailedWithCauseError: 'with text: is "50e.0"' doesn't match the selected view.,&#xD;
+,Expected: with text: is "50e.0",&#xD;
+,Got: "MaterialTextView{id=2131231009, res-name=output, visibility=VISIBLE, width=765, height=97, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, layout-params=android.widget.LinearLayout$LayoutParams@c2f0864, tag=null, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=84.0, text=500.0, input-type=0, ime-target=false, has-links=false}",&#xD;
+,,&#xD;
+,at dalvik.system.VMStack.getThreadStackTrace(Native Method),&#xD;
+,at java.lang.Thread.getStackTrace(Thread.java:1960),&#xD;
+,at androidx.test.espresso.base.DefaultFailureHandler.getUserFriendlyError(DefaultFailureHandler.java:96),&#xD;
+,at androidx.test.espresso.base.DefaultFailureHandler.handle(DefaultFailureHandler.java:59),&#xD;
+,at androidx.test.espresso.ViewInteraction.waitForAndHandleInteractionResults(ViewInteraction.java:324),&#xD;
+,at androidx.test.espresso.ViewInteraction.check(ViewInteraction.java:306),&#xD;
+,at com.testingbot.calculator.AdvancedCalculatorTest.ensureLargeNumbersWork(AdvancedCalculatorTest.java:44),&#xD;
+,... 29 trimmed,&#xD;
+,Caused by: junit.framework.AssertionFailedError: 'with text: is "50e.0"' doesn't match the selected view.,&#xD;
+,Expected: with text: is "50e.0",&#xD;
+,Got: "MaterialTextView{id=2131231009, res-name=output, visibility=VISIBLE, width=765, height=97, has-focus=false, has-focusable=false, has-window-focus=true, is-clickable=false, is-enabled=true, is-focused=false, is-focusable=false, is-layout-requested=false, is-selected=false, layout-params=android.widget.LinearLayout$LayoutParams@c2f0864, tag=null, root-is-layout-requested=false, has-input-connection=false, x=0.0, y=84.0, text=500.0, input-type=0, ime-target=false, has-links=false}",&#xD;
+,,&#xD;
+,at androidx.test.espresso.matcher.ViewMatchers.assertThat(ViewMatchers.java:540),&#xD;
+,at androidx.test.espresso.assertion.ViewAssertions$MatchesViewAssertion.check(ViewAssertions.java:105),&#xD;
+,at androidx.test.espresso.ViewInteraction$SingleExecutionViewAssertion.check(ViewInteraction.java:425),&#xD;
+,at androidx.test.espresso.ViewInteraction$2.call(ViewInteraction.java:288),&#xD;
+,at androidx.test.espresso.ViewInteraction$2.call(ViewInteraction.java:272),&#xD;
+,at java.util.concurrent.FutureTask.run(FutureTask.java:317),&#xD;
+,at android.os.Handler.handleCallback(Handler.java:995),&#xD;
+,at android.os.Handler.dispatchMessage(Handler.java:103),&#xD;
+,at android.os.Looper.loopOnce(Looper.java:248),&#xD;
+,at android.os.Looper.loop(Looper.java:338),&#xD;
+,at android.app.ActivityThread.main(ActivityThread.java:9067),&#xD;
+,at java.lang.reflect.Method.invoke(Native Method),&#xD;
+,at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593),&#xD;
+,at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932),&#xD;
+,</failure>
+    </testcase>
+    <testcase name="ensureClearWorks" result="passed" classname="com.testingbot.calculator.CalculatorTest.ensureClearWorks" test_id="t" time="2142"/>
+    <testcase name="ensureButtonsWork" result="passed" classname="com.testingbot.calculator.CalculatorTest.ensureButtonsWork" test_id="t" time="2227"/>
+    <testcase name="ensureDivideWorks" result="passed" classname="com.testingbot.calculator.CalculatorTest.ensureDivideWorks" test_id="t" time="3389"/>
+    <testcase name="ensureMultiplicationWorks" result="passed" classname="com.testingbot.calculator.CalculatorTest.ensureMultiplicationWorks" test_id="t" time="2614"/>
+    <testcase name="ensureAdditionWorks" result="passed" classname="com.testingbot.calculator.CalculatorTest.ensureAdditionWorks" test_id="t" time="2596"/>
+  </testsuite>
+</testsuites>

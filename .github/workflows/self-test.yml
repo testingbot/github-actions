@@ -1,0 +1,121 @@
+name: "Self-test"
+# Runs the actions from this checkout (uses: ./<action>) against the real
+# TestingBot API. Needs the TB_KEY and TB_SECRET repository secrets; without
+# them (forks, Dependabot) every job is skipped instead of failing.
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    gate:
+        runs-on: ubuntu-latest
+        outputs:
+            enabled: ${{ steps.check.outputs.enabled }}
+        steps:
+            - id: check
+              env:
+                TB_KEY: ${{ secrets.TB_KEY }}
+              run: echo "enabled=$([ -n "$TB_KEY" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+    web:
+        name: setup-env + tunnel + report
+        needs: gate
+        if: needs.gate.outputs.enabled == 'true'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                node-version: 24
+            - id: env
+              uses: ./setup-env
+              with:
+                key: ${{ secrets.TB_KEY }}
+                secret: ${{ secrets.TB_SECRET }}
+            - name: Check the exported environment
+              run: |
+                test -n "$TB_KEY" && test -n "$TESTINGBOT_SECRET"
+                test "$TB_BUILD" = "${{ steps.env.outputs.build-name }}"
+                test "$TESTINGBOT_TUNNEL_IDENTIFIER" = "$TB_TUNNEL_IDENTIFIER"
+            - name: Serve the test page
+              run: python3 -m http.server 8080 --directory test/e2e > /dev/null 2>&1 &
+            - uses: testingbot/testingbot-tunnel-action@v2
+              with:
+                key: ${{ secrets.TB_KEY }}
+                secret: ${{ secrets.TB_SECRET }}
+                tunnelIdentifier: ${{ env.TB_TUNNEL_IDENTIFIER }}
+            - name: Run one WebDriver session through the tunnel
+              run: node test/e2e/session.mjs
+              env:
+                E2E_URL: http://localhost:8080/
+                E2E_TITLE: TestingBot tunnel self-test
+                E2E_TUNNEL: 'true'
+            - id: report
+              if: always()
+              uses: ./report
+              with:
+                junit-file: reports/testingbot.xml
+                comment-on-pr: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+                fail-on-failure: true
+            - name: Check the report outputs
+              if: always()
+              run: |
+                test "${{ steps.report.outputs.outcome }}" = passed
+                test "${{ steps.report.outputs.total }}" -ge 1
+                grep -q '<testsuites' reports/testingbot.xml
+
+    mobile:
+        name: app-upload + espresso + xcuitest (dry run)
+        needs: gate
+        if: needs.gate.outputs.enabled == 'true'
+        runs-on: ubuntu-latest
+        env:
+            TB_KEY: ${{ secrets.TB_KEY }}
+            TB_SECRET: ${{ secrets.TB_SECRET }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                node-version: 24
+            - name: Download the sample apps
+              env:
+                GH_TOKEN: ${{ github.token }}
+              run: |
+                gh release download 1.0.0 -R testingbot/android-espresso-demo-app -D apps
+                gh release download v0.0.1 -R testingbot/sample-app -p sample.ipa -p sample.zip -D apps
+            - id: upload
+              uses: ./app-upload
+              with:
+                file: apps/app-debug.apk
+            - run: test "${{ steps.upload.outputs.app-state }}" = DONE && [[ "${{ steps.upload.outputs.app-url }}" == tb://* ]]
+            - id: espresso
+              uses: ./espresso
+              with:
+                app: apps/app-debug.apk
+                test-app: apps/app-debug-androidTest.apk
+                # The demo suite has one test that fails on purpose-built
+                # emulators (ensureLargeNumbersWork); check the plumbing, not it.
+                fail-on-failure: false
+            - name: Check the espresso outputs
+              run: |
+                [[ "${{ steps.espresso.outputs.outcome }}" =~ ^(passed|failed)$ ]]
+                grep -q '<testcase' "${{ steps.espresso.outputs.junit-file }}"
+            # No public XCUITest app pair exists yet, so this only validates
+            # the command the action builds.
+            - id: xcuitest
+              uses: ./xcuitest
+              with:
+                app: apps/sample.ipa
+                test-app: apps/sample.zip
+                device: iPhone 16
+                real-device: true
+                dry-run: true
+            - run: test "${{ steps.xcuitest.outputs.outcome }}" = dry-run

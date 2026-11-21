@@ -1,0 +1,153 @@
+name: 'TestingBot Espresso'
+description: 'Run Espresso tests on TestingBot Android emulators and real devices, wait for the result and emit a JUnit report.'
+author: 'TestingBot'
+branding:
+    icon: 'smartphone'
+    color: 'blue'
+inputs:
+    key:
+        description: 'TestingBot API key. Falls back to TB_KEY / TESTINGBOT_KEY.'
+        required: false
+    secret:
+        description: 'TestingBot API secret. Falls back to TB_SECRET / TESTINGBOT_SECRET.'
+        required: false
+    app:
+        description: 'Path to the app APK.'
+        required: true
+    test-app:
+        description: 'Path to the test APK (assembleAndroidTest).'
+        required: true
+    device:
+        description: 'Device name or regex, e.g. "Pixel 8" or "iPhone 1[56]". Default: any suitable device.'
+        required: false
+    platform-version:
+        description: 'OS version, e.g. "14" or "18.2".'
+        required: false
+    real-device:
+        description: 'Use a real device instead of an emulator/simulator.'
+        required: false
+        default: 'false'
+    tablet-only:
+        description: 'Only allocate tablets.'
+        required: false
+        default: 'false'
+    phone-only:
+        description: 'Only allocate phones.'
+        required: false
+        default: 'false'
+    locale:
+        description: 'Device locale.'
+        required: false
+    timezone:
+        description: 'Device timezone, e.g. Europe/London.'
+        required: false
+    language:
+        description: 'App language (ISO 639-1).'
+        required: false
+    geo-country-code:
+        description: 'Geographic IP location (ISO country code).'
+        required: false
+    throttle-network:
+        description: 'Network throttling: 4G, 3G, Edge or airplane.'
+        required: false
+    name:
+        description: 'Name in the TestingBot dashboard. Default: PR title, else first line of the commit message.'
+        required: false
+    build:
+        description: 'Build to group the runs under. Default: $TB_BUILD (setup-env).'
+        required: false
+    tunnel:
+        description: 'Start a TestingBot Tunnel for the run (not with async).'
+        required: false
+        default: 'false'
+    tunnel-identifier:
+        description: 'Identifier for the tunnel.'
+        required: false
+    retry:
+        description: 'Re-run a failed test up to N times (0-2). The last attempt decides.'
+        required: false
+        default: '0'
+    timeout:
+        description: 'Minutes to wait for results (CLI default 60).'
+        required: false
+    fail-fast:
+        description: 'Cancel the remaining runs at the first final failure.'
+        required: false
+        default: 'false'
+    priority:
+        description: 'Queue priority among your own runs: high, normal or low.'
+        required: false
+    metadata:
+        description: 'Extra metadata shown on the run, one KEY=VALUE per line.'
+        required: false
+    download-artifacts:
+        description: 'Download video, logs and screenshots: all or failed.'
+        required: false
+    artifacts-output-dir:
+        description: 'Directory for the downloaded artifacts. Default: $RUNNER_TEMP/testingbot-artifacts.'
+        required: false
+    report-output-dir:
+        description: 'Directory for the CLI''s JUnit reports. Default: $RUNNER_TEMP/testingbot-<command>-reports.'
+        required: false
+    junit-file:
+        description: 'Path of the merged JUnit file. Default: $RUNNER_TEMP/testingbot-<command>-junit.xml.'
+        required: false
+    fail-on-failure:
+        description: 'Fail the step when tests fail. With false, failures are only annotated.'
+        required: false
+        default: 'true'
+    async:
+        description: 'Start the run and return at once; no results, no JUnit.'
+        required: false
+        default: 'false'
+    dry-run:
+        description: 'Validate and print the request without uploading or running.'
+        required: false
+        default: 'false'
+    cli-version:
+        description: 'Version of @testingbot/cli to run.'
+        required: false
+        default: 'latest'
+    extra-args:
+        description: 'Extra raw arguments for the testingbot command.'
+        required: false
+    test-runner:
+        description: 'Custom instrumentation runner.'
+        required: false
+    class:
+        description: 'Only these test classes (comma-separated, fully qualified).'
+        required: false
+    not-class:
+        description: 'Exclude these classes.'
+        required: false
+    package:
+        description: 'Only these packages (comma-separated).'
+        required: false
+    not-package:
+        description: 'Exclude these packages.'
+        required: false
+    annotation:
+        description: 'Only tests with these annotations.'
+        required: false
+    not-annotation:
+        description: 'Exclude tests with these annotations.'
+        required: false
+    size:
+        description: 'small, medium and/or large (comma-separated).'
+        required: false
+outputs:
+    outcome:
+        description: 'passed, failed, started (async), dry-run or error.'
+    console-url:
+        description: 'Link to the run in the TestingBot dashboard.'
+    app-id:
+        description: 'TestingBot project id of the run.'
+    runs:
+        description: 'JSON array of runs: id, status, passed, device, url.'
+    results-file:
+        description: 'Path to the JSON results written by the CLI.'
+    junit-file:
+        description: 'Path to the merged JUnit report (not with async or dry-run).'
+runs:
+    using: 'node24'
+    main: 'dist/index.js'
