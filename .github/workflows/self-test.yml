@@ -89,7 +89,7 @@ jobs:
               env:
                 GH_TOKEN: ${{ github.token }}
               run: |
-                gh release download 1.0.0 -R testingbot/android-espresso-demo-app -D apps
+                gh release download 1.0.1 -R testingbot/android-espresso-demo-app -D apps
                 gh release download v0.0.1 -R testingbot/sample-app -p sample.ipa -p sample.zip -D apps
             - id: upload
               uses: ./app-upload
@@ -101,12 +101,9 @@ jobs:
               with:
                 app: apps/app-debug.apk
                 test-app: apps/app-debug-androidTest.apk
-                # The demo suite has one test that fails on purpose-built
-                # emulators (ensureLargeNumbersWork); check the plumbing, not it.
-                fail-on-failure: false
             - name: Check the espresso outputs
               run: |
-                [[ "${{ steps.espresso.outputs.outcome }}" =~ ^(passed|failed)$ ]]
+                test "${{ steps.espresso.outputs.outcome }}" = passed
                 grep -q '<testcase' "${{ steps.espresso.outputs.junit-file }}"
             # No public XCUITest app pair exists yet, so this only validates
             # the command the action builds.
